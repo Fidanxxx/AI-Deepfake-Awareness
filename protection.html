@@ -1,0 +1,369 @@
+<<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Deepfake Awareness</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(120deg, #36d1c4 0%, #5b86e5 60%, #ee0979 100%);
+      min-height: 100vh;
+    }
+    .header {
+      width: 100%;
+      background: rgba(26,30,45,0.86);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 18px 0 18px 26px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+      position: relative;
+      z-index: 3;
+    }
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      width: 34px;
+      height: 32px;
+      justify-content: center;
+      align-items: center;
+      margin-right: 18px;
+      z-index: 4;
+      transition: 0.3s;
+    }
+    .bar {
+      width: 30px;
+      height: 4px;
+      background: #ffca28;
+      margin: 5px 0;
+      border-radius: 3px;
+      transition: all 0.3s;
+    }
+    .brand {
+      color: #fff;
+      font-size: 1.8rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-shadow: 1px 1px 6px #36d1c4, 0 1px 12px #5b86e5;
+      text-decoration: none;
+    }
+    .nav-menu {
+      position: fixed;
+      top: 0; 
+      left: -265px;
+      height: 100%;
+      width: 230px;
+      background: linear-gradient(180deg, #5b86e5 0%, #36d1c4 100%);
+      box-shadow: 2px 0 16px 0 rgba(48,10,76,0.2);
+      padding: 75px 25px 30px 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      transition: left 0.33s cubic-bezier(0.87,0,0.13,1);
+      z-index: 10;
+    }
+    .nav-menu.active {
+      left: 0;
+    }
+    .nav-link {
+      color: #fff;
+      background: linear-gradient(90deg,#ffca28 0%, #ee0979 100%);
+      font-size: 1.19rem;
+      font-weight: 500;
+      text-decoration: none;
+      padding: 10px 13px;
+      border-radius: 10px;
+      box-shadow: 1px 1px 6px #5b86e5, 0 1px 16px #ee0979;
+      transition: background 0.2s, color 0.2s;
+      text-align: center;
+    }
+    .nav-link:hover, .nav-link:focus {
+      background: linear-gradient(90deg,#ee0979 20%, #ffca28 80%);
+      color: #251542;
+    }
+    .nav-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(52,18,92,0.20);
+      z-index: 8;
+      transition: backdrop-filter 0.22s;
+    }
+    .nav-overlay.active {
+      display: block;
+      backdrop-filter: blur(2px);
+    }
+    .hamburger.active .bar:nth-child(2) {opacity:0;}
+    .hamburger.active .bar:nth-child(1) {transform: translateY(9px) rotate(45deg);}
+    .hamburger.active .bar:nth-child(3) {transform: translateY(-9px) rotate(-45deg);}
+    .main-container {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 24px;
+    }
+    .sidebar {
+      width: 25%;
+      padding: 10px;
+      background: rgba(26,30,45,0.4);
+      border-radius: 18px;
+      box-shadow: 0 8px 22px rgba(46,102,204,0.25);
+    }
+    .sidebar-img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .ai-animation {
+      margin: 30px auto 0 auto;
+      max-width: 320px;
+      text-align: center;
+      color: #fff;
+    }
+    .ai-orbit {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin: 0 auto 14px auto;
+      border-radius: 50%;
+      border: 2px dashed rgba(255,255,255,0.35);
+      box-shadow: 0 0 18px rgba(0,0,0,0.3);
+      animation: orbit-rotate 14s linear infinite;
+    }
+    .ai-core {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 20%, #ffffff, #00e5ff 40%, #0044ff 100%);
+      box-shadow:
+        0 0 18px rgba(0,229,255,0.85),
+        0 0 34px rgba(0,102,255,0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+    .ai-node {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ffca28;
+      box-shadow: 0 0 12px rgba(255,202,40,0.9);
+      animation: node-pulse 1.6s ease-in-out infinite alternate;
+    }
+    .ai-node.n1 { top: 4px; left: 50%; transform: translateX(-50%); }
+    .ai-node.n2 { bottom: 8px; left: 18px; animation-delay: 0.2s; }
+    .ai-node.n3 { bottom: 18px; right: 18px; animation-delay: 0.4s; }
+    .ai-node.n4 { top: 50%; right: 2px; transform: translateY(-50%); animation-delay: 0.6s; }
+    .ai-caption {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      opacity: 0.95;
+    }
+    @keyframes orbit-rotate {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes node-pulse {
+      0% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 4px rgba(255,255,255,0.4));
+      }
+      100% {
+        transform: scale(1.3);
+        filter: drop-shadow(0 0 10px rgba(255,255,255,0.9));
+      }
+    }
+    .content-sections {
+      width: 70%;
+      margin-left: 2%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .section {
+      background: rgba(26,30,45,0.48);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 8px 22px rgba(46,102,204,0.25);
+      color: #fff;
+    }
+    footer {
+      text-align: center;
+      padding: 16px;
+      background: rgba(26,30,45,0.86);
+      color: #fff;
+      font-size: 1rem;
+      margin-top: 24px;
+    }
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+      }
+      .sidebar, .content-sections {
+        width: 100%;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="hamburger" id="hamburger" tabindex="0" aria-label="Open Navigation" aria-expanded="false">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </div>
+    <span class="brand">AI Deepfake Awareness</span>
+  </header>
+  <div class="nav-overlay" id="navOverlay"></div>
+  <nav class="nav-menu" id="navMenu" aria-label="Main Navigation">
+    <a href="home.html" class="nav-link">Home Page</a>
+    <a href="aboutus.html" class="nav-link">About Us</a>
+    <a href="protection.html" class="nav-link">Protection Policies</a>
+    <a href="news.html" class="nav-link">How to detect deepfakes</a>
+    <a href="contact.html" class="nav-link">Contact Us</a>
+  </nav>
+  <div class="main-container">
+    <div class="sidebar">
+        <a href="home.html">
+            <img src="images/deepfake.jpeg" alt="AI Awareness" class="sidebar-img">
+          </a>
+          <a href="aboutus.html">
+            <img src="images/aboutus.png.webp" alt="About Us" class="sidebar-img">
+          </a>
+          <a href="protection.html">
+            <img src="images/digitalsafety.jpeg" alt="Digital Safety" class="sidebar-img">
+          </a>
+          <a href="news.html">
+            <img src="images/detectai.jpeg" alt="Deepfake Detection" class="sidebar-img">
+          </a>
+          <a href="contact.html">
+            <img src="images/click.png" alt="Contact Us" class="sidebar-img">
+          </a>
+      <div class="ai-animation">
+        <div class="ai-orbit">
+          <div class="ai-core">AI</div>
+          <span class="ai-node n1"></span>
+          <span class="ai-node n2"></span>
+          <span class="ai-node n3"></span>
+          <span class="ai-node n4"></span>
+        </div>
+        <p class="ai-caption">
+          Visualising how deepfake content moves through AI networks.
+        </p>
+      </div>
+    </div>
+    <div class="content-sections">
+      <div class="section">
+        <h2>Protection Policies against deepfake</h2>
+        <p>
+          <ul>
+            <li>
+              Protection policies against deepfakes aim to safeguard individuals and society from the risks posed by AI-generated manipulated content, such as fake images, audio, and videos.
+            </li>
+            <li>
+              In the UK, recent legislation has taken significant steps to address these threats, particularly focusing on the creation and sharing of non-consensual intimate images.
+            </li>
+            <li>
+              The new laws, including amendments to the Online Safety Act 2023 <a href = "https://www.gov.uk/government/news/government-crackdown-on-explicit-deepfakes">(click here for more details)</a>, and the introduction of the Data (Use and Access) Bill <a href = "https://www.gov.uk/government/news/better-protection-for-victims-thanks-to-new-law-on-sexually-explicit-deepfakes">(click here for more details)</a>, make it a criminal offence to create or distribute sexually explicit deepfakes without consent.
+            </li>
+            <li>
+              These measures empower law enforcement to prosecute offenders and require platforms to swiftly remove harmful content, with enforcement action from Ofcom <a href = "https://www.gov.uk/government/news/government-crackdown-on-explicit-deepfakes">(click here for more details)</a> for non-compliance.
+            </li>
+            <li>
+              The UK’s approach reflects a growing commitment to protecting victims, deterring malicious use, and ensuring accountability in the digital age.
+            </li>
+          </ul>
+      </p>
+      </div>
+      <div class="section">
+        <p>
+            In the UK, deepfake protection policies in 2025 are focused primarily on criminalizing the creation and sharing of sexually explicit deepfakes and protecting victims from non-consensual intimate image abuse. Key aspects of the UK’s approach include:  </p>
+      <br>
+      <h2>Criminal Offences:</h2>
+      <ul>
+        <li>	Creating or sharing sexually explicit deepfake images without consent is now a specific criminal offence, punishable by up to two years in prison and unlimited fines.</li>
+        <li>	New laws also criminalize the taking of intimate images without consent and the installation of equipment with intent to commit such acts.</li>
+      </ul>
+        </div>
+      <div class="section">
+        <h2>Platform Responsibility:</h2>
+        <p>
+            <ul>
+                <li>	Social media and online platforms are required to promptly remove deepfake content upon notification and face enforcement action from Ofcom if they fail to comply.</li>
+                <li>	Sharing or threatening to share intimate images, including deepfakes, without consent is already an offence under the Sexual Offences Act 2003, as amended by the Online Safety Act 2023.</li>
+              </ul>
+
+      </div>
+      <div class="section">
+        <h2>Victim Support:</h2>
+        <p>
+            <ul>
+                <li>	The new legislation prioritizes protection for victims, particularly women and girls, by closing legal loopholes and expanding the definition of offences to cover both creation and dissemination of deepfakes.</li>
+                <li>	The government has committed to further measures, including new offences for requesting the creation of deepfake images and additional provisions in the Crime and Policing Bill.</li>
+            </ul> </p>
+      </div>
+
+    
+    <div class="section">
+      <h2>Gaps and Ongoing developments:</h2>
+      <p>
+          <ul>
+              <li>	While the focus is on intimate image abuse, there is currently a patchwork of existing laws covering other deepfake harms (e.g., defamation, fraud, intellectual property), with broader regulation still under development.</li>
+              <li>	The Data (Use and Access) Act 2025, not yet fully in force, will further criminalize the creation and requesting of intimate deepfakes without consent.</li>
+          </ul> </p>
+    </div>
+
+    <div class="section">
+        <h2>Further Information on UK Deepfake Protection Policies</h2>
+        <p>
+            <ul>
+                <li>	For more information about UK protection policies on deepfakes, click here: <a href = "https://www.gov.uk/government/news/government-crackdown-on-explicit-deepfakes"> https://www.gov.uk/government/news/government-crackdown-on-explicit-deepfakes</a> </li>
+                <li>	UK Government – Cracks Down on Deepfakes Creation:<a href = "https://www.gov.uk/government/news/government-cracks-down-on-deepfakes-creation">https://www.gov.uk/government/news/government-cracks-down-on-deepfakes-creation</a> </li>
+                <li> Legal overview of UK deepfake laws (Mishcon de Reya): <a href =  " https://www.mishcon.com/news/when-ai-impersonates-taking-action-against-deepfakes-in-the-uk">https://www.mishcon.com/news/when-ai-impersonates-taking-action-against-deepfakes-in-the-uk</a></li>
+                <li>The Online Safety Act 2023 requires platforms to remove harmful deepfake content and face enforcement by Ofcom if they fail:  <a href = "https://www.endviolenceagainstwomen.org.uk/campaign-win-law-to-stop-deepfake-abuse/">https://www.endviolenceagainstwomen.org.uk/campaign-win-law-to-stop-deepfake-abuse/</a>  </li>
+                <li>Ongoing legislative updates aim to fill gaps in protecting citizens from AI-based identity manipulation: <a href = "https://www.techuk.org/resource/vawg-rasso-update-government-crackdown-on-explicit-deepfakes.html">https://www.techuk.org/resource/vawg-rasso-update-government-crackdown-on-explicit-deepfakes.html</a></li>
+            </ul> </p>
+      </div>
+    </div>
+  </div>
+  <footer>
+    &copy; 2025 Fidan. All rights reserved.
+  </footer>
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('navMenu');
+    const navOverlay = document.getElementById('navOverlay');
+    hamburger.addEventListener('click', function() {
+      hamburger.classList.toggle('active');
+      navMenu.classList.toggle('active');
+      navOverlay.classList.toggle('active');
+      hamburger.setAttribute('aria-expanded', navMenu.classList.contains('active'));
+    });
+    navOverlay.addEventListener('click', function() {
+      hamburger.classList.remove('active');
+      navMenu.classList.remove('active');
+      navOverlay.classList.remove('active');
+      hamburger.setAttribute('aria-expanded', 'false');
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key === "Escape" && navMenu.classList.contains('active')) {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        navOverlay.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  </script>
+</body>
+</html>
